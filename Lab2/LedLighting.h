@@ -26,7 +26,7 @@ void ledLighting(uint32_t delayTime)
         stateLeds[i] = LOW;
       }
     }
-    flagChangeLeds = true;
+    // flagChangeLeds = true;
   }
 
   if (flagChangeLeds)

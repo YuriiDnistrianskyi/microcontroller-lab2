@@ -1,8 +1,7 @@
 #ifndef HTML_H
 #define HTML_H
 
-;const char html[] PROGMEM = R"rawliteral(
-<!DOCTYPE html>
+const char html[] PROGMEM = R"rawliteral(
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -60,7 +59,7 @@
 
         .box {
             width: 20%;
-            height: 100%;
+            height: 50%;
             border-style: solid;
         }
 
@@ -82,8 +81,8 @@
     <div class="block">
         <h1 class="text">ESP32 Web Site</h1>
         <div class="button-block">
-            <button class="button" onclick="sendCommand1()">Algoritm 1</button>
-            <button class="button" onclick="sendCommand2()">Algoritm 2</button>
+            <button class="button" onclick="sendCommandFirst()">Algoritm 1</button>
+            <button class="button" onclick="sendCommandSecond()">Algoritm 2</button>
         </div>
         <div class="led-block">
             <div class="box led-1"></div>
@@ -92,7 +91,19 @@
         </div>
     </div>
     <script>
-        let ledStateList = [0, 1, 0];
+        const led1 = document.querySelector(".led-1");
+        const led2 = document.querySelector(".led-2");
+        const led3 = document.querySelector(".led-3");
+
+        const ledList = [led1, led2, led3];
+        let ledStateList = [0, 0, 0];
+        let currentLed = 0;
+
+        const intervalList = [2000, 1000, 500, 200];
+        let indexInterval = 0;
+        let interval = intervalList[indexInterval];
+
+        let currentInterval = null;
 
         function ledOn(numberOfLed) {
             let color = "#ffffff";
@@ -112,11 +123,6 @@
         }
 
         function ledLighting() {
-            const led1 = document.querySelector(".led-1");
-            const led2 = document.querySelector(".led-2");
-            const led3 = document.querySelector(".led-3");
-
-            const ledList = [led1, led2, led3];
             let color = "#000000";
 
             for (i = 0; i < 3; i++) {
@@ -130,11 +136,50 @@
             }
         }
 
-        function sendCommand1() {
-            fetch("/click", { method: "GET" });
+        async function sendCommandFirst() {
+            fetch("/click_f", { method: "GET" });
             ledLighting();
         }
 
+        async function sendCommanSecond() {
+            fetch("/click_s", { method: "GET"})
+        }
+
+        function setIntervalFromESP32() { // не працює
+            fetch("/interval", { method: "GET"})
+                .then(response => response.text())
+                .then(data => {
+                    console.log(data);
+                    if (data == "Set interval") {
+                        indexInterval = (indexInterval + 1) % 4;
+                        interval = intervalList[indexInterval];
+                        intervalStart();
+                    }
+                })
+                .catch(error => console.log(error));
+        }
+
+        function intervalStart() {
+            if (currentInterval) {
+                clearInterval(currentInterval);
+            }
+
+            currentInterval = setInterval(function() {
+                currentLed = (currentLed + 1) % 3;
+
+                for (i = 0; i < 3; i++) {
+                    if (i == currentLed) {
+                        ledStateList[i] = 1;
+                    }
+                    else{
+                        ledStateList[i] = 0;
+                    }
+                }
+                ledLighting();
+            }, interval);
+        }
+        
+        intervalStart();
     </script>
 </body>
 </html>

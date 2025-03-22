@@ -2,13 +2,14 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
-#include "pins.H"
+#include "pins.h"
 #include "esp32Server.h"
 #include "ledLighting.h"
+#include "esp32serialRead.h"
 
-B   
 #define DEBOUNCE_TIME 200UL
 #define SERIAL_SPEED 115200
+#define SERIAL_SPEED_FOR_UART 57600
 
 bool stateButton = LOW;
 volatile uint32_t prevDebounceTime = 0;
@@ -22,7 +23,8 @@ void IRAM_ATTR handleOnClick()
   uint32_t currentTime = millis();
   if ((currentTime - prevDebounceTime) > DEBOUNCE_TIME) 
   {
-    setInterval();
+    Serial.println("Click");
+    sendSetInterval();
     prevDebounceTime = currentTime;
   }
 }
@@ -43,6 +45,7 @@ void pinModeSetup()
 void setup()
 {
   Serial.begin(SERIAL_SPEED);
+  Serial2.begin(SERIAL_SPEED_FOR_UART, SERIAL_7E1, RX2, TX2);
   pinModeSetup();
   initWifi();
   attachInterrupt(digitalPinToInterrupt(buttonPin), handleOnClick, RISING);
@@ -52,5 +55,6 @@ void loop()
 {
   server.handleClient();
   interval = intervalArray[indexArray];
+  readSerialMonitor();
   ledLighting(interval);
 }

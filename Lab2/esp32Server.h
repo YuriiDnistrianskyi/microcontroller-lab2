@@ -13,10 +13,20 @@ void handleRoot()
   server.send(200, "text/html", html);
 }
   
-void handleWebClick()
+void handleWebClickFirst()
 {
   setInterval();
   server.send(200, "text/html", "Click");
+}
+
+void handleWebClickSecond()
+{
+  Serial.println("C");
+}
+
+void sendSetInterval()
+{
+  server.send(200, "text/plain", "Set interval");
 }
 
 void initWifi()
@@ -31,7 +41,9 @@ void initWifi()
   Serial.println(WiFi.localIP());
 
   server.on("/", handleRoot);
-  server.on("/click", HTTP_GET, handleWebClick);
+  server.on("/click_f", handleWebClickFirst);
+  server.on("/click_s", handleWebClickSecond);
+  server.on("/interval", sendSetInterval);
   server.begin();
 }
 

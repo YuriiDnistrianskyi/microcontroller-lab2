@@ -9,15 +9,22 @@ void readSerialMonitor()
 {
   if (Serial2.available() > 0)
   {
-    String command = Serial2.readString();
-    if (command == "C")
+    char command = Serial2.read();
+    if (command == 'C')
     {
       setInterval();
-      // Serial2.println("C");
-    } else {
-      Serial2.print("Unknow command: ");
-      Serial2.println(command);
+      Serial2.println('R');
+      Serial.println("send response");
     }
+    else if (command == 'R') {
+      setInterval();
+      Serial.println("set Interval");
+    }
+    // else if (command == )
+    // else {
+    //   Serial.print("Unknow command: ");
+    //   Serial.println(command);
+    // }
   }
 }
 

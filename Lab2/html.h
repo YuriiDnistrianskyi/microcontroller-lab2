@@ -138,48 +138,26 @@ const char html[] PROGMEM = R"rawliteral(
 
         async function sendCommandFirst() {
             fetch("/click_f", { method: "GET" });
-            ledLighting();
         }
 
-        async function sendCommanSecond() {
-            fetch("/click_s", { method: "GET"})
+        async function sendCommandSecond() {
+            fetch("/click_s", { method: "GET" });
         }
 
-        function setIntervalFromESP32() { // не працює
+        function getStateLeds() {
             fetch("/interval", { method: "GET"})
-                .then(response => response.text())
+                .then(response => response.json())
                 .then(data => {
-                    console.log(data);
-                    if (data == "Set interval") {
-                        indexInterval = (indexInterval + 1) % 4;
-                        interval = intervalList[indexInterval];
-                        intervalStart();
-                    }
+                    ledStateList[0] = data.stateLed1;
+                    ledStateList[1] = data.stateLed2;
+                    ledStateList[2] = data.stateLed3;
+                    ledLighting();
                 })
                 .catch(error => console.log(error));
         }
 
-        function intervalStart() {
-            if (currentInterval) {
-                clearInterval(currentInterval);
-            }
+        setInterval(getStateLeds, 200);
 
-            currentInterval = setInterval(function() {
-                currentLed = (currentLed + 1) % 3;
-
-                for (i = 0; i < 3; i++) {
-                    if (i == currentLed) {
-                        ledStateList[i] = 1;
-                    }
-                    else{
-                        ledStateList[i] = 0;
-                    }
-                }
-                ledLighting();
-            }, interval);
-        }
-        
-        intervalStart();
     </script>
 </body>
 </html>

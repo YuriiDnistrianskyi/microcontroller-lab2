@@ -1,7 +1,7 @@
 #ifndef LEDLIGHTING_H
 #define LEDLIGHTING_H
 
-#include "pins.h"
+#include "../info/pins.h"
 bool stateLeds[3] = {};
 bool stateOther[3] = {};
 uint8_t numberOfLeds = sizeof(stateLeds) / sizeof(stateLeds[0]);
@@ -35,10 +35,6 @@ void ledLighting(uint32_t delayTime)
     digitalWrite(ledPin1, stateLeds[0]);
     digitalWrite(ledPin2, stateLeds[1]);
     digitalWrite(ledPin3, stateLeds[2]);
-    // Serial2.println("StateLeds");
-    // Serial2.println(stateLeds[0]);
-    // Serial2.println(stateLeds[1]);
-    // Serial2.println(stateLeds[2]);
     flagChangeLeds = false;
   }
 }

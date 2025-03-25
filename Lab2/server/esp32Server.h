@@ -3,7 +3,8 @@
 
 #include <WebServer.h>
 #include "html.h"
-#include "info.h"
+#include "../info/infoWiFi.h"
+#include "../info/commandsUART.h"
 
 extern void setInterval();
 extern bool stateLeds[3]; 
@@ -19,33 +20,20 @@ void handleRoot()
 void handleWebClickFirst()
 {
   setInterval();
-  listId = 0;
   server.send(200, "text/html", "Click");
 }
 
 void handleWebClickSecond()
 {
-  Serial2.println('C');
+  Serial2.println(sendCommandUART);
   Serial.println("Send on ESP32");
-  listId = 1;
 }
 
 void sendStateLeds()
 {
-  bool stateList[3];
-
-  if (listId == 0)
-  {
-    String stateStr = "{\"stateLed1\":" + String(stateLeds[0]) + 
+  String stateStr = "{\"stateLed1\":" + String(stateLeds[0]) + 
                     ",\"stateLed2\":" + String(stateLeds[1]) +
                     ",\"stateLed3\":" + String(stateLeds[2]) + "}";
-  } 
-  else if (listId == 1)
-  {
-    String stateStr = "{\"stateLed1\":" + String(stateOther[0]) + 
-                    ",\"stateLed2\":" + String(stateOther[1]) +
-                    ",\"stateLed3\":" + String(stateOther[2]) + "}";
-  }
 
   server.send(200, "application/json", stateStr);
 }
